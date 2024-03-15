@@ -45,6 +45,17 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
+      - name: get env
+        run: |
+          echo "APP_NAME=${{ needs.crate_metadata.outputs.name }}" >> $GITHUB_ENV
+          echo "APP_VERSION=${{ needs.crate_metadata.outputs.version }}" >> $GITHUB_ENV
+          echo "MATRIX_TARGET=${{ matrix.target }}" >> $GITHUB_ENV
+          echo "MATRIX_OS=${{ matrix.os }}" >> $GITHUB_ENV
+          echo "APP_NAME: ${APP_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "APP_VERSION: ${APP_VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "MATRIX_TARGET: ${MATRIX_TARGET}" >> $GITHUB_STEP_SUMMARY
+          echo "MATRIX_OS: ${MATRIX_OS}" >> $GITHUB_STEP_SUMMARY
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -59,24 +70,7 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
-          # Replace with the name of your binary
-          binary_name="${{ needs.crate_metadata.outputs.name }}"
-          version="${{ needs.crate_metadata.outputs.version }}"
-          dirname="${{ binary_name }}-${{ version }}-${{ matrix.target }}"
-          mkdir "$dirname"
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            mv "target/${{ matrix.target }}/release/${{ binary_name }}.exe" "$dirname"
-          else
-            mv "target/${{ matrix.target }}/release/${{ binary_name }}" "$dirname"
-          fi
-          
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            7z a "${{ dirname }}.zip" "${{ dirname }}"
-            echo "ASSET=${{ dirname }}.zip" >> $GITHUB_ENV
-          else
-            tar -czf "${{ dirname }}.tar.gz" "$dirname"
-            echo "ASSET=${{ dirname }}.tar.gz" >> $GITHUB_ENV
-          fi
+          sh .github/build_archive.sh
 
       - name: Release
         uses: softprops/action-gh-release@v1
