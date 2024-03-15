@@ -31,21 +31,20 @@ jobs:
     needs: crate_metadata
     runs-on: ${{ matrix.os }}
     permissions:
-#      pull-requests: write   # 'write' access to pull requests
+      #      pull-requests: write   # 'write' access to pull requests
       contents: write # We generate static HTML, JS, CSS so we need write access to the repo
-#      pages: write
-#      id-token: write
-#      deployments: write
-#      statuses: write
-#      actions: write
-#      checks: read
+    #      pages: write
+    #      id-token: write
+    #      deployments: write
+    #      statuses: write
+    #      actions: write
+    #      checks: read
     strategy:
       matrix:
         include:
-          - build: linux
-            os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-
+          #          - build: linux
+          #            os: ubuntu-latest
+          #            target: x86_64-unknown-linux-musl
           - build: macos
             os: macos-latest
             target: x86_64-apple-darwin
@@ -79,6 +78,9 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
+          ls -alh
+          ls -alh target/release/
+          echo "========begin build========"
           sh .github/build_archive.sh
 
       - name: Upload binaries to release
@@ -87,6 +89,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.ASSET }}
           asset_name: ${{ env.ASSET }}
-          tag: build-${{ github.ref }}
+          tag: build-${GITHUB_REF##*/}-${{ github.sha }}
 
 

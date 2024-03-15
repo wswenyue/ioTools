@@ -7,13 +7,14 @@ version="${APP_VERSION}"
 # shellcheck disable=SC2034
 dir_name="${binary_name}-${version}-${MATRIX_TARGET}"
 mkdir "${dir_name}"
+ls -alh "target/${MATRIX_TARGET}/release/"
 # shellcheck disable=SC2193
 if [ "${MATRIX_OS}" = "windows-latest" ]; then
   mv "target/${MATRIX_TARGET}/release/${binary_name}.exe" "${dir_name}"
 else
   mv "target/${MATRIX_TARGET}/release/${binary_name}" "${dir_name}"
 fi
-
+ls -alh
 # shellcheck disable=SC2193
 if [ "${MATRIX_OS}" = "windows-latest" ]; then
   7z a "${dir_name}.zip" "${dir_name}"
