@@ -72,9 +72,12 @@ jobs:
         run: |
           sh .github/build_archive.sh
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v1-release
         with:
-          files: |
-            ${{ env.ASSET }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.ASSET }}
+          asset_name: ${{ env.ASSET }}
+          tag: build-${{ github.ref }}
+
 
