@@ -30,6 +30,15 @@ jobs:
     name: Build ${{ matrix.target }} (${{ matrix.os }})
     needs: crate_metadata
     runs-on: ${{ matrix.os }}
+    permissions:
+#      pull-requests: write   # 'write' access to pull requests
+      contents: write # We generate static HTML, JS, CSS so we need write access to the repo
+#      pages: write
+#      id-token: write
+#      deployments: write
+#      statuses: write
+#      actions: write
+#      checks: read
     strategy:
       matrix:
         include:
