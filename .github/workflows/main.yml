@@ -100,35 +100,35 @@ jobs:
             ${{ env.asset_target }}
             ${{ env.asset_binary }}
 
-      #      - name: Upload Release - Target
-      #        uses: svenstaro/upload-release-action@v1
-      #        with:
-      #          repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #          file: ${{ env.asset_target }}
-      #          asset_name: ${{ env.asset_target }}
-      #          tag: ${{ env.GIT_BRANCH_SHA }}
-      #          body: "- Upload Release - Target"
-      #
-      #      - name: Upload Release - Binary
-      #        uses: svenstaro/upload-release-action@v1
-      #        with:
-      #          repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #          file: ${{ env.asset_binary }}
-      #          asset_name: ${{ env.asset_binary }}
-      #          tag: ${{ env.GIT_BRANCH_SHA }}
-      #          body: "- Upload Release - Binary"
-      - name: Upload binaries to release
-        uses: meeDamian/github-release@2.0
+      - name: Upload Release - Target
+        uses: svenstaro/upload-release-action@v2.8.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.asset_target }}
+          asset_name: ${{ env.asset_target }}
           tag: ${{ env.GIT_BRANCH_SHA }}
-          name: My Creative Name
-          body: >
-            This release actually changes the fabric of the reality, so be careful
-            while applying, as error in database migration, can irrecoverably wipe
-            some laws of physics.
-          gzip: folders
-          files: >
-            ${{ env.asset_target }}
-            ${{ env.asset_binary }}
+          body: "- Upload Release - Target"
+
+      - name: Upload Release - Binary
+        uses: svenstaro/upload-release-action@v2.8.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.asset_binary }}
+          asset_name: ${{ env.asset_binary }}
+          tag: ${{ env.GIT_BRANCH_SHA }}
+          body: "- Upload Release - Binary"
+#      - name: Upload binaries to release
+#        uses: meeDamian/github-release@2.0
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          tag: ${{ env.GIT_BRANCH_SHA }}
+#          name: My Creative Name
+#          body: >
+#            This release actually changes the fabric of the reality, so be careful
+#            while applying, as error in database migration, can irrecoverably wipe
+#            some laws of physics.
+#          gzip: folders
+#          files: >
+#            ${{ env.asset_target }}
+#            ${{ env.asset_binary }}
 
