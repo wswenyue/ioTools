@@ -81,16 +81,24 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-#      - name: Build
-#        uses: actions-rs/cargo@v1
-#        with:
-#          use-cross: true
-#          command: build
-#          args: --verbose --release --target ${{ matrix.target }}
+      #      - name: Build
+      #        uses: actions-rs/cargo@v1
+      #        with:
+      #          use-cross: true
+      #          command: build
+      #          args: --verbose --release --target ${{ matrix.target }}
       - name: Build archive
         shell: bash
         run: |
           sh .github/build_archive.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: |
+            ${{ env.asset_target }}
+            ${{ env.asset_binary }}
 
       - name: Upload Release - Target
         uses: svenstaro/upload-release-action@v2
