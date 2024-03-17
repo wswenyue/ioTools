@@ -14,10 +14,10 @@ ls -alh "./target/release/"
 asset_binary_name="${APP_NAME}-${APP_VERSION}-${MATRIX_TARGET}"
 echo "=================pack target binary${MATRIX_TARGET}=====begin============="
 if [ "${MATRIX_OS}" = "windows-latest" ]; then
-  7z a "${asset_binary_name}.zip" "target/release/${APP_NAME}.exe"
+  7z a "${asset_binary_name}.zip" "target/${MATRIX_TARGET}/release/${APP_NAME}.exe"
   echo "asset_binary=${asset_binary_name}.zip" >> $GITHUB_ENV
 else
-  tar -czf "${asset_binary_name}.tar.gz" "target/release/${APP_NAME}"
+  tar -czf "${asset_binary_name}.tar.gz" "target/${MATRIX_TARGET}/release/${APP_NAME}"
   echo "asset_binary=${asset_binary_name}.tar.gz" >> $GITHUB_ENV
 fi
 echo "=================pack target binary================end===================="
