@@ -16,11 +16,11 @@ jobs:
         id: crate_metadata
         run: |
           meta_info=$(cargo metadata --no-deps --format-version 1)
-          cat ${meta_info} | jq -r '"name=" + .packages[0].name' | tee -a $GITHUB_OUTPUT
-          cat ${meta_info} | jq -r '"version=" + .packages[0].version' | tee -a $GITHUB_OUTPUT
-          cat ${meta_info} | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
-          cat ${meta_info} | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
-          cat ${meta_info} | jq -r '"rust_version=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
+          echo ${meta_info} | jq -r '"name=" + .packages[0].name' | tee -a $GITHUB_OUTPUT
+          echo ${meta_info} | jq -r '"version=" + .packages[0].version' | tee -a $GITHUB_OUTPUT
+          echo ${meta_info} | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
+          echo ${meta_info} | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
+          echo ${meta_info} | jq -r '"rust_version=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
     outputs:
       name: ${{ steps.crate_metadata.outputs.name }}
       version: ${{ steps.crate_metadata.outputs.version }}
