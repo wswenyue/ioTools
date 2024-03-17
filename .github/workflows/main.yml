@@ -63,6 +63,12 @@ jobs:
           echo "APP_VERSION: ${APP_VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "MATRIX_TARGET: ${MATRIX_TARGET}" >> $GITHUB_STEP_SUMMARY
           echo "MATRIX_OS: ${MATRIX_OS}" >> $GITHUB_STEP_SUMMARY
+          git_branch=$(git rev-parse --abbrev-ref HEAD)
+          git_sha_short=$(git rev-parse --short HEAD)
+          git_branch_sha="${git_branch}-${git_sha_short}"
+          echo "GIT_BRANCH=${git_branch}" >> $GITHUB_ENV
+          echo "GIT_SHA_SHORT=${git_sha_short}" >> $GITHUB_ENV
+          echo "GIT_BRANCH_SHA=${git_branch_sha}" >> $GITHUB_ENV
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -86,7 +92,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.asset_target }}
           asset_name: ${{ env.asset_target }}
-          tag: build-${GITHUB_REF##*/}-${{ github.sha }}
+          tag: ${{ env.GIT_BRANCH_SHA }}
 
       - name: Upload Release - Binary
         uses: svenstaro/upload-release-action@v1-release
@@ -94,7 +100,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.asset_binary }}
           asset_name: ${{ env.asset_binary }}
-          tag: build-${GITHUB_REF##*/}-${{ github.sha }}
+          tag: ${{ env.GIT_BRANCH_SHA }}
 #      - name: Upload binaries to release
 #        uses: meeDamian/github-release@2.0
 #        with:
