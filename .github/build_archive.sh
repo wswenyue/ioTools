@@ -2,25 +2,24 @@
 # Author: wswenyue.
 #Date & Time: 2024-03-15 19:55:32
 #Description: a bash script
-binary_name="${APP_NAME}"
-version="${APP_VERSION}"
-# shellcheck disable=SC2034
-dir_name="${binary_name}-${version}-${MATRIX_TARGET}"
-mkdir "${dir_name}"
-ls -alh "target/${MATRIX_TARGET}/release/"
-# shellcheck disable=SC2193
+ls -alh ./
+
+echo "=================pack target:${MATRIX_TARGET}======begin========="
+asset_target="target-${APP_VERSION}-${MATRIX_TARGET}.tar.gz"
+tar -czf "${asset_target}" target
+echo "asset_target=${asset_target}" >> $GITHUB_ENV
+echo "=================pack target================end=================="
+ls -alh "./target/release/"
+
+asset_binary_name="${APP_NAME}-${APP_VERSION}-${MATRIX_TARGET}"
+echo "=================pack target binary${MATRIX_TARGET}=====begin============="
 if [ "${MATRIX_OS}" = "windows-latest" ]; then
-  mv "target/${MATRIX_TARGET}/release/${binary_name}.exe" "${dir_name}"
+  7z a "${asset_binary_name}.zip" "target/release/${APP_NAME}.exe"
+  echo "asset_binary=${asset_binary_name}.zip" >> $GITHUB_ENV
 else
-  mv "target/${MATRIX_TARGET}/release/${binary_name}" "${dir_name}"
+  tar -czf "${asset_binary_name}.tar.gz" "target/release/${APP_NAME}"
+  echo "asset_binary=${asset_binary_name}.tar.gz" >> $GITHUB_ENV
 fi
-ls -alh
-# shellcheck disable=SC2193
-if [ "${MATRIX_OS}" = "windows-latest" ]; then
-  7z a "${dir_name}.zip" "${dir_name}"
-  echo "ASSET=${dir_name}.zip" >> $GITHUB_ENV
-else
-  tar -czf "${dir_name}.tar.gz" "${dir_name}"
-  echo "ASSET=${dir_name}.tar.gz" >> $GITHUB_ENV
-fi
+echo "=================pack target binary================end===================="
+
 echo "succeed."

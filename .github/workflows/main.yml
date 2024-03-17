@@ -78,17 +78,35 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
-          ls -alh
-          ls -alh target/release/
-          echo "========begin build========"
           sh .github/build_archive.sh
 
-      - name: Upload binaries to release
+      - name: Upload Release - Target
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ env.ASSET }}
-          asset_name: ${{ env.ASSET }}
+          file: ${{ env.asset_target }}
+          asset_name: ${{ env.asset_target }}
           tag: build-${GITHUB_REF##*/}-${{ github.sha }}
 
+      - name: Upload Release - Binary
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.asset_binary }}
+          asset_name: ${{ env.asset_binary }}
+          tag: build-${GITHUB_REF##*/}-${{ github.sha }}
+#      - name: Upload binaries to release
+#        uses: meeDamian/github-release@2.0
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          tag: build-${GITHUB_REF##*/}-${{ github.sha }}
+#          name: My Creative Name
+#          body: >
+#            This release actually changes the fabric of the reality, so be careful
+#            while applying, as error in database migration, can irrecoverably wipe
+#            some laws of physics.
+#          gzip: folders
+#          files: >
+#            ${{ env.asset_target }}
+#            ${{ env.asset_binary }}
 
