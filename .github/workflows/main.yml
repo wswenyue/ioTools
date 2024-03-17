@@ -12,21 +12,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
       - name: Extract crate information
         id: crate_metadata
         run: |
           meta_info=$(cargo metadata --no-deps --format-version 1)
+          version=$(echo ${meta_info} | jq -r .packages[0].version')
           echo ${meta_info} | jq -r '"name=" + .packages[0].name' | tee -a $GITHUB_OUTPUT
           echo ${meta_info} | jq -r '"version=" + .packages[0].version' | tee -a $GITHUB_OUTPUT
           echo ${meta_info} | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
           echo ${meta_info} | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
           echo ${meta_info} | jq -r '"rust_version=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
+          echo ${meta_info} | jq -r '"publish-info=" + .packages[0].metadata.info.publish-info' | tee -a $GITHUB_OUTPUT
+          echo "APP_VERSION=${version}" >> $GITHUB_ENV
+          python .github/create_tag.py
     outputs:
       name: ${{ steps.crate_metadata.outputs.name }}
       version: ${{ steps.crate_metadata.outputs.version }}
       maintainer: ${{ steps.crate_metadata.outputs.maintainer }}
       homepage: ${{ steps.crate_metadata.outputs.homepage }}
       rust_version: ${{ steps.crate_metadata.outputs.rust_version }}
+      publish-info: ${{ steps.crate_metadata.outputs.publish-info }}
+      new_tag: ${{ env.NEW_TAG }}
+      new_version: ${{ env.NEW_VERSION }}
 
   build:
     name: Build ${{ matrix.target }} (${{ matrix.os }})
@@ -58,6 +69,8 @@ jobs:
 
       - name: get env
         run: |
+          echo "new_tag: ${{ needs.crate_metadata.outputs.new_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "NEW_TAG=${{ needs.crate_metadata.outputs.new_tag }}" >> $GITHUB_ENV
           echo "APP_NAME=${{ needs.crate_metadata.outputs.name }}" >> $GITHUB_ENV
           echo "APP_VERSION=${{ needs.crate_metadata.outputs.version }}" >> $GITHUB_ENV
           echo "MATRIX_TARGET=${{ matrix.target }}" >> $GITHUB_ENV
@@ -122,11 +135,8 @@ jobs:
       - name: Upload Release - Binary
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.GIT_BRANCH_SHA }}
-          body: >
-            This release actually changes the fabric of the reality, so be careful
-            while applying, as error in database migration, can irrecoverably wipe
-            some laws of physics.
+          tag_name: ${{ env.NEW_TAG }}
+          body: ${{ needs.crate_metadata.outputs.publish-info }}
           files: |
             ${{ env.asset_binary }}
         env:
