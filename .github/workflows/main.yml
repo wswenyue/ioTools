@@ -122,6 +122,7 @@ jobs:
       - name: Upload Release - Binary
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.GIT_BRANCH_SHA }}
           body: >
             This release actually changes the fabric of the reality, so be careful
             while applying, as error in database migration, can irrecoverably wipe
