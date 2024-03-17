@@ -15,7 +15,7 @@ jobs:
       - name: Extract crate information
         id: crate_metadata
         run: |
-          meta_info=${cargo metadata --no-deps --format-version 1}
+          meta_info=$(cargo metadata --no-deps --format-version 1)
           cat ${meta_info} | jq -r '"name=" + .packages[0].name' | tee -a $GITHUB_OUTPUT
           cat ${meta_info} | jq -r '"version=" + .packages[0].version' | tee -a $GITHUB_OUTPUT
           cat ${meta_info} | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
