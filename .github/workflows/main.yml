@@ -35,6 +35,7 @@ jobs:
     permissions:
       #      pull-requests: write   # 'write' access to pull requests
       contents: write # We generate static HTML, JS, CSS so we need write access to the repo
+      discussions: write
     #      pages: write
     #      id-token: write
     #      deployments: write
@@ -119,9 +120,14 @@ jobs:
           #          body: "- Upload Release - Binary"
 
       - name: Upload Release - Binary
-        uses: JasonEtco/upload-to-release@master
+        uses: softprops/action-gh-release@v2
         with:
-          args: ${{ env.asset_binary }} application/zip
+          body: >
+            This release actually changes the fabric of the reality, so be careful
+            while applying, as error in database migration, can irrecoverably wipe
+            some laws of physics.
+          files: |
+            ${{ env.asset_binary }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #      - name: Upload binaries to release
