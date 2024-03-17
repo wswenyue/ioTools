@@ -12,16 +12,36 @@ asset_target="target-${APP_VERSION}-${MATRIX_TARGET}.tar.gz"
 tar -czf "${asset_target}" target
 echo "asset_target=${asset_target}" >> $GITHUB_ENV
 echo "=================pack target================end=================="
-ls -alh "./target/release/"
-
+echo "----------------./target/release/-----------------------------"
+ls -alh ./target/release/
+echo "----------------./target/${MATRIX_TARGET}---------------------"
+ls -alh "./target/${MATRIX_TARGET}"
+echo "----------------./target/${MATRIX_TARGET}/release-------------"
+ls -alh "./target/${MATRIX_TARGET}/release"
+echo "--------------------------------------------------------------"
 asset_binary_name="${APP_NAME}-${APP_VERSION}-${MATRIX_TARGET}"
 echo "=================pack target binary${MATRIX_TARGET}=====begin============="
 if [ "${MATRIX_OS}" = "windows-latest" ]; then
-  7z a "${asset_binary_name}.zip" "target/${MATRIX_TARGET}/release/${APP_NAME}.exe"
-  echo "asset_binary=${asset_binary_name}.zip" >> $GITHUB_ENV
+  binary="./target/${MATRIX_TARGET}/release/${APP_NAME}.exe"
+  if [ -e "${binary}" ]
+    then
+        7z a "${asset_binary_name}.zip" "${binary}"
+        echo "asset_binary=${asset_binary_name}.zip" >> $GITHUB_ENV
+    else
+        echo "file no exists!!! binary :${binary}"
+        exit 1
+  fi
+
 else
-  tar -czf "${asset_binary_name}.tar.gz" "target/${MATRIX_TARGET}/release/${APP_NAME}"
-  echo "asset_binary=${asset_binary_name}.tar.gz" >> $GITHUB_ENV
+  binary="./target/${MATRIX_TARGET}/release/${APP_NAME}"
+  if [ -e "${binary}" ]
+  then
+      tar -czf "${asset_binary_name}.tar.gz" "${binary}"
+      echo "asset_binary=${asset_binary_name}.tar.gz" >> $GITHUB_ENV
+  else
+      echo "file no exists!!! binary :${binary}"
+      exit 1
+  fi
 fi
 echo "=================pack target binary================end===================="
 
