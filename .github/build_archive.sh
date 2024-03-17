@@ -25,7 +25,8 @@ if [ "${MATRIX_OS}" = "windows-latest" ]; then
   binary="./target/${MATRIX_TARGET}/release/${APP_NAME}.exe"
   if [ -e "${binary}" ]
     then
-        7z a "${asset_binary_name}.zip" "${binary}"
+        mv "${binary}" "./${APP_NAME}.exe"
+        7z a "${asset_binary_name}.zip" "./${APP_NAME}.exe"
         echo "asset_binary=${asset_binary_name}.zip" >> $GITHUB_ENV
     else
         echo "file no exists!!! binary :${binary}"
@@ -36,7 +37,8 @@ else
   binary="./target/${MATRIX_TARGET}/release/${APP_NAME}"
   if [ -e "${binary}" ]
   then
-      tar -czf "${asset_binary_name}.tar.gz" "${binary}"
+      mv "${binary}" "./${APP_NAME}"
+      tar -czf "${asset_binary_name}.tar.gz"  "./${APP_NAME}"
       echo "asset_binary=${asset_binary_name}.tar.gz" >> $GITHUB_ENV
   else
       echo "file no exists!!! binary :${binary}"
