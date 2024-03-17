@@ -14,17 +14,18 @@ jobs:
       - name: Extract crate information
         id: crate_metadata
         run: |
-          echo "name=io-tools" | tee -a $GITHUB_OUTPUT
-          cargo metadata --no-deps --format-version 1 | jq -r '"version=" + .packages[0].version' | tee -a $GITHUB_OUTPUT
-          cargo metadata --no-deps --format-version 1 | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
-          cargo metadata --no-deps --format-version 1 | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
-          cargo metadata --no-deps --format-version 1 | jq -r '"msrv=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
+          meta_info=${cargo metadata --no-deps --format-version 1}
+          cat ${meta_info} | jq -r '"name=" + .packages[0].name' | tee -a $GITHUB_OUTPUT
+          cat ${meta_info} | jq -r '"version=" + .packages[0].version' | tee -a $GITHUB_OUTPUT
+          cat ${meta_info} | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
+          cat ${meta_info} | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
+          cat ${meta_info} | jq -r '"rust_version=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
     outputs:
       name: ${{ steps.crate_metadata.outputs.name }}
       version: ${{ steps.crate_metadata.outputs.version }}
       maintainer: ${{ steps.crate_metadata.outputs.maintainer }}
       homepage: ${{ steps.crate_metadata.outputs.homepage }}
-      msrv: ${{ steps.crate_metadata.outputs.msrv }}
+      rust_version: ${{ steps.crate_metadata.outputs.rust_version }}
 
   build:
     name: Build ${{ matrix.target }} (${{ matrix.os }})
@@ -59,10 +60,15 @@ jobs:
           echo "APP_VERSION=${{ needs.crate_metadata.outputs.version }}" >> $GITHUB_ENV
           echo "MATRIX_TARGET=${{ matrix.target }}" >> $GITHUB_ENV
           echo "MATRIX_OS=${{ matrix.os }}" >> $GITHUB_ENV
-          echo "APP_NAME: ${APP_NAME}" >> $GITHUB_STEP_SUMMARY
-          echo "APP_VERSION: ${APP_VERSION}" >> $GITHUB_STEP_SUMMARY
-          echo "MATRIX_TARGET: ${MATRIX_TARGET}" >> $GITHUB_STEP_SUMMARY
-          echo "MATRIX_OS: ${MATRIX_OS}" >> $GITHUB_STEP_SUMMARY
+
+          echo "APP_NAME: ${{ needs.crate_metadata.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "APP_VERSION: ${{ needs.crate_metadata.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "maintainer: ${{ needs.crate_metadata.outputs.maintainer }}" >> $GITHUB_STEP_SUMMARY
+          echo "homepage: ${{ needs.crate_metadata.outputs.homepage }}" >> $GITHUB_STEP_SUMMARY
+          echo "rust_version: ${{ needs.crate_metadata.outputs.rust_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "MATRIX_TARGET: ${{ matrix.target }}" >> $GITHUB_STEP_SUMMARY
+          echo "MATRIX_OS: ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
+          
           git_branch=$(git rev-parse --abbrev-ref HEAD)
           git_sha_short=$(git rev-parse --short HEAD)
           git_branch_sha="${git_branch}-${git_sha_short}"
@@ -74,33 +80,34 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --verbose --release --target ${{ matrix.target }}
-
+#      - name: Build
+#        uses: actions-rs/cargo@v1
+#        with:
+#          use-cross: true
+#          command: build
+#          args: --verbose --release --target ${{ matrix.target }}
       - name: Build archive
         shell: bash
         run: |
           sh .github/build_archive.sh
 
       - name: Upload Release - Target
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.asset_target }}
           asset_name: ${{ env.asset_target }}
           tag: ${{ env.GIT_BRANCH_SHA }}
+          body: "- Upload Release - Target"
 
       - name: Upload Release - Binary
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.asset_binary }}
           asset_name: ${{ env.asset_binary }}
           tag: ${{ env.GIT_BRANCH_SHA }}
+          body: "- Upload Release - Binary"
 #      - name: Upload binaries to release
 #        uses: meeDamian/github-release@2.0
 #        with:
