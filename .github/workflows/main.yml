@@ -173,7 +173,7 @@ jobs:
         run: |
           echo "- :white_check_mark:  checkout done." >> $GITHUB_STEP_SUMMARY
           echo "- :white_check_mark:  download formula down." >> $GITHUB_STEP_SUMMARY
-          cat formula.rb > Formula/ioTools.rb
+          cat formula.rb > Formula/iotools.rb
           rm -rf formula.rb
           echo "- :white_check_mark:  overwrite formula file." >> $GITHUB_STEP_SUMMARY
       - name: Commit files
