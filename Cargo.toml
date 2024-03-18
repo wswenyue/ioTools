@@ -18,7 +18,7 @@ rust-version = "1.76.0"
 
 # 以下配置元数据可以在发布时使用
 [package.metadata.info]
-publish-info = """
+publish_info = """
 ## Test 0.1.0
 - changed 1
 - changed 2

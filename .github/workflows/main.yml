@@ -26,7 +26,8 @@ jobs:
           echo ${meta_info} | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
           echo ${meta_info} | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
           echo ${meta_info} | jq -r '"rust_version=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
-          echo ${meta_info} | jq -r '"publish-info=" + .packages[0].metadata.info.publish-info' | tee -a $GITHUB_OUTPUT
+          publish_info=$(echo ${meta_info} | jq -r '.packages[0].metadata.info.publish_info')
+          echo "publish_info='''${publish_info}'''" >> $GITHUB_OUTPUT
           echo "APP_VERSION=${version}" >> $GITHUB_ENV
           python .github/create_tag.py
     outputs:
@@ -35,7 +36,7 @@ jobs:
       maintainer: ${{ steps.crate_metadata.outputs.maintainer }}
       homepage: ${{ steps.crate_metadata.outputs.homepage }}
       rust_version: ${{ steps.crate_metadata.outputs.rust_version }}
-      publish-info: ${{ steps.crate_metadata.outputs.publish-info }}
+      publish_info: ${{ steps.crate_metadata.outputs.publish_info }}
       new_tag: ${{ env.NEW_TAG }}
       new_version: ${{ env.NEW_VERSION }}
 
@@ -136,7 +137,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.NEW_TAG }}
-          body: ${{ needs.crate_metadata.outputs.publish-info }}
+          body: ${{ needs.crate_metadata.outputs.publish_info }}
           files: |
             ${{ env.asset_binary }}
         env:
