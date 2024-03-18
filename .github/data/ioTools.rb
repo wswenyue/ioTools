@@ -13,7 +13,7 @@ class Aklog < Formula
   end
 
   test do
-    system bin/"ioTools", "--version"
+       system "false"
   end
 
 end
