@@ -9,11 +9,11 @@ class Iotools < Formula
   version '#_version_#'
 
   def install
-    bin.install "iotools"
+    bin.install "io_tools" => "iotools"
   end
 
   test do
-       system "false"
+       system bin/"iotools", "--version"
   end
 
 end
