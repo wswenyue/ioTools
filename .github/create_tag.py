@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Created by wswenyue on 2024-03-17 20:51:42.
 # Description: a python script
+import json
 import os
 import subprocess
 from typing import Dict, Any
@@ -97,15 +98,31 @@ def run():
     new_version = f"{version}.{v_revision}"
     new_tag = f"v{new_version}"
     print(f"new_tag: {new_tag}")
-    publish_info = cmd_run_shell(
-        "cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].metadata.info.publish_info'")
-
     add_envs({
         "NEW_VERSION": new_version,
         "NEW_TAG": new_tag,
+    })
+
+
+def cargo_meta_handle():
+    meta: str = cmd_run("cargo metadata --no-deps --format-version 1")
+    meta_json = json.loads(meta)
+    app_version = meta_json['packages'][0]['version']
+    app_name = meta_json['packages'][0]['name']
+    maintainer = meta_json['packages'][0]['authors'][0]
+    homepage = meta_json['packages'][0]['homepage']
+    rust_version = meta_json['packages'][0]['rust_version']
+    publish_info = meta_json['packages'][0]['metadata']['info']['publish_info']
+    add_envs({
+        "APP_VERSION": app_version,
+        "APP_NAME": app_name,
+        "MAINTAINER": maintainer,
+        "HOMEPAGE": homepage,
+        "RUST_VERSION": rust_version,
         "PUBLISH_INFO": publish_info,
     })
 
 
 if __name__ == '__main__':
+    cargo_meta_handle()
     run()

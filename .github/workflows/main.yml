@@ -16,28 +16,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Extract crate information
-        id: read_metadata
-        run: |
-          meta_info=$(cargo metadata --no-deps --format-version 1)
-          version=$(echo ${meta_info} | jq -r .packages[0].version')
-          echo ${meta_info} | jq -r '"name=" + .packages[0].name' | tee -a $GITHUB_OUTPUT
-          echo ${meta_info} | jq -r '"version=" + .packages[0].version' | tee -a $GITHUB_OUTPUT
-          echo ${meta_info} | jq -r '"maintainer=" + .packages[0].authors[0]' | tee -a $GITHUB_OUTPUT
-          echo ${meta_info} | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
-          echo ${meta_info} | jq -r '"rust_version=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
-          echo "APP_VERSION=${version}" >> $GITHUB_ENV
-
       - name: create_tag
         shell: bash
         run: python3 -m pdb .github/create_tag.py
 
     outputs:
-      name: ${{ steps.read_metadata.outputs.name }}
-      version: ${{ steps.read_metadata.outputs.version }}
-      maintainer: ${{ steps.read_metadata.outputs.maintainer }}
-      homepage: ${{ steps.read_metadata.outputs.homepage }}
-      rust_version: ${{ steps.read_metadata.outputs.rust_version }}
+      name: ${{ env.APP_NAME }}
+      version: ${{ env.APP_VERSION }}
+      maintainer: ${{ env.MAINTAINER }}
+      homepage: ${{ env.HOMEPAGE }}
+      rust_version: ${{ env.RUST_VERSION }}
       publish_info: ${{ env.PUBLISH_INFO }}
       new_tag: ${{ env.NEW_TAG }}
       new_version: ${{ env.NEW_VERSION }}
