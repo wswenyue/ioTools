@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Extract crate information
-        id: crate_metadata
+        id: read_metadata
         run: |
           meta_info=$(cargo metadata --no-deps --format-version 1)
           version=$(echo ${meta_info} | jq -r .packages[0].version')
@@ -27,13 +27,17 @@ jobs:
           echo ${meta_info} | jq -r '"homepage=" + .packages[0].homepage' | tee -a $GITHUB_OUTPUT
           echo ${meta_info} | jq -r '"rust_version=" + .packages[0].rust_version' | tee -a $GITHUB_OUTPUT
           echo "APP_VERSION=${version}" >> $GITHUB_ENV
-          python .github/create_tag.py
+
+      - name: create_tag
+        shell: bash
+        run: python3 -m pdb .github/create_tag.py
+
     outputs:
-      name: ${{ steps.crate_metadata.outputs.name }}
-      version: ${{ steps.crate_metadata.outputs.version }}
-      maintainer: ${{ steps.crate_metadata.outputs.maintainer }}
-      homepage: ${{ steps.crate_metadata.outputs.homepage }}
-      rust_version: ${{ steps.crate_metadata.outputs.rust_version }}
+      name: ${{ steps.read_metadata.outputs.name }}
+      version: ${{ steps.read_metadata.outputs.version }}
+      maintainer: ${{ steps.read_metadata.outputs.maintainer }}
+      homepage: ${{ steps.read_metadata.outputs.homepage }}
+      rust_version: ${{ steps.read_metadata.outputs.rust_version }}
       publish_info: ${{ env.PUBLISH_INFO }}
       new_tag: ${{ env.NEW_TAG }}
       new_version: ${{ env.NEW_VERSION }}
