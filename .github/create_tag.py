@@ -4,7 +4,6 @@
 # Description: a python script
 import os
 import subprocess
-import sys
 from typing import Dict, Any
 
 
@@ -25,6 +24,12 @@ def add_envs(envs: Dict[str, Any]):
         for key, value in envs.items():
             env_file.write(f"{key}={value}")
             env_file.write("\n")
+
+
+def cmd_run_shell(cmd: str) -> str:
+    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    output = ps.communicate()[0]
+    return get_str(output)
 
 
 def cmd_run(cmd: str) -> str:
@@ -85,14 +90,22 @@ def next_revision_num(version_pre: str) -> int:
     return _max + 1
 
 
-version = os.getenv('APP_VERSION')
-print(f"version: {version}")
-v_revision = next_revision_num(version)
-new_version = f"{version}.{v_revision}"
-new_tag = f"v{new_version}"
-print(f"new_tag: {new_tag}")
-add_envs({
-    "NEW_VERSION": new_version,
-    "NEW_TAG": new_tag
-})
-sys.exit(0)
+def run():
+    version = os.getenv('APP_VERSION')
+    print(f"version: {version}")
+    v_revision = next_revision_num(version)
+    new_version = f"{version}.{v_revision}"
+    new_tag = f"v{new_version}"
+    print(f"new_tag: {new_tag}")
+    publish_info = cmd_run_shell(
+        "cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].metadata.info.publish_info'")
+
+    add_envs({
+        "NEW_VERSION": new_version,
+        "NEW_TAG": new_tag,
+        "PUBLISH_INFO": publish_info,
+    })
+
+
+if __name__ == '__main__':
+    run()
