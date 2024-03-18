@@ -24,6 +24,7 @@ jobs:
         run: |
           echo "APP_NAME: ${APP_NAME}"
           echo "APP_VERSION: ${{ env.APP_VERSION }}"
+          echo "NEW_VERSION: ${{ env.NEW_VERSION }}"
           echo "MAINTAINER: ${MAINTAINER}"
           echo "PUBLISH_INFO: ${PUBLISH_INFO}"
           echo "RUST_VERSION: ${RUST_VERSION}"
@@ -72,6 +73,7 @@ jobs:
           echo "NEW_TAG=${{ needs.crate_metadata.outputs.new_tag }}" >> $GITHUB_ENV
           echo "APP_NAME=${{ needs.crate_metadata.outputs.name }}" >> $GITHUB_ENV
           echo "APP_VERSION=${{ needs.crate_metadata.outputs.version }}" >> $GITHUB_ENV
+          echo "NEW_VERSION=${{ needs.crate_metadata.outputs.new_version }}" >> $GITHUB_ENV
           echo "MATRIX_TARGET=${{ matrix.target }}" >> $GITHUB_ENV
           echo "MATRIX_OS=${{ matrix.os }}" >> $GITHUB_ENV
 
