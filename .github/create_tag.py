@@ -24,7 +24,13 @@ def add_envs(envs: Dict[str, Any]):
     # write to the file
     with open(env_file, "a") as env_file:
         for key, value in envs.items():
-            env_file.write(f"{key}={value}")
+            if '\n' in value or '\r' in value:
+                delimiter = uuid.uuid1()
+                print(f'{key}<<{delimiter}', file=env_file)
+                print(value, file=env_file)
+                print(delimiter, file=env_file)
+            else:
+                env_file.write(f"{key}={value}")
             env_file.write("\n")
 
 
