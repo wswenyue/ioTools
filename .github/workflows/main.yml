@@ -18,7 +18,15 @@ jobs:
           python-version: '3.x'
       - name: create_tag
         shell: bash
-        run: python3 -m pdb .github/create_tag.py
+        run: python3 .github/create_tag.py
+      - name: test env
+        shell: bash
+        run: |
+          echo "APP_NAME: ${APP_NAME}"
+          echo "APP_VERSION: ${{ env.APP_VERSION }}"
+          echo "MAINTAINER: ${MAINTAINER}"
+          echo "PUBLISH_INFO: ${PUBLISH_INFO}"
+          echo "RUST_VERSION: ${RUST_VERSION}"
 
     outputs:
       name: ${{ env.APP_NAME }}

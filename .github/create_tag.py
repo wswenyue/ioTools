@@ -5,6 +5,7 @@
 import json
 import os
 import subprocess
+import uuid
 from typing import Dict, Any
 
 
@@ -27,6 +28,19 @@ def add_envs(envs: Dict[str, Any]):
             env_file.write("\n")
 
 
+def set_output(name, value):
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        print(f'{name}={value}', file=fh)
+
+
+def set_multiline_output(name, value):
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        delimiter = uuid.uuid1()
+        print(f'{name}<<{delimiter}', file=fh)
+        print(value, file=fh)
+        print(delimiter, file=fh)
+
+
 def cmd_run_shell(cmd: str) -> str:
     ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output = ps.communicate()[0]
@@ -41,11 +55,11 @@ def cmd_run(cmd: str) -> str:
 
 def cmd_run_iter(cmd: str):
     _cmd = str(cmd).split()
-    popen = subprocess.Popen(_cmd, stdout=subprocess.PIPE, universal_newlines=True)
-    for stdout_line in iter(popen.stdout.readline, ""):
+    _popen = subprocess.Popen(_cmd, stdout=subprocess.PIPE, universal_newlines=True)
+    for stdout_line in iter(_popen.stdout.readline, ""):
         yield get_str(stdout_line)
-    popen.stdout.close()
-    return_code = popen.wait()
+    _popen.stdout.close()
+    return_code = _popen.wait()
     if return_code:
         raise subprocess.CalledProcessError(return_code, _cmd)
 
@@ -108,6 +122,7 @@ def cargo_meta_handle():
     meta: str = cmd_run("cargo metadata --no-deps --format-version 1")
     meta_json = json.loads(meta)
     app_version = meta_json['packages'][0]['version']
+    print(f"app_version:{app_version}")
     app_name = meta_json['packages'][0]['name']
     maintainer = meta_json['packages'][0]['authors'][0]
     homepage = meta_json['packages'][0]['homepage']
