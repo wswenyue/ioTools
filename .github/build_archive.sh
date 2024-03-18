@@ -37,8 +37,10 @@ else
   binary="./target/${MATRIX_TARGET}/release/${APP_NAME}"
   if [ -e "${binary}" ]
   then
-      mv "${binary}" "./${APP_NAME}"
-      tar -czf "${asset_binary_name}.tar.gz"  "./${APP_NAME}"
+      mv "${binary}" "./brew/bin/${APP_NAME}"
+      cd ./brew || exit 1
+      tar -czf "${asset_binary_name}.tar.gz"  "./bin/${APP_NAME}"
+      cd ..
       echo "asset_binary=${asset_binary_name}.tar.gz" >> $GITHUB_ENV
   else
       echo "file no exists!!! binary :${binary}"
