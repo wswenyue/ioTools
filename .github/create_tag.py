@@ -105,20 +105,7 @@ def next_revision_num(version_pre: str) -> int:
     return _max + 1
 
 
-def run():
-    version = os.getenv('APP_VERSION')
-    print(f"version: {version}")
-    v_revision = next_revision_num(version)
-    new_version = f"{version}.{v_revision}"
-    new_tag = f"v{new_version}"
-    print(f"new_tag: {new_tag}")
-    add_envs({
-        "NEW_VERSION": new_version,
-        "NEW_TAG": new_tag,
-    })
-
-
-def cargo_meta_handle():
+def cargo_meta_handle() -> Dict:
     meta: str = cmd_run("cargo metadata --no-deps --format-version 1")
     meta_json = json.loads(meta)
     app_version = meta_json['packages'][0]['version']
@@ -128,16 +115,27 @@ def cargo_meta_handle():
     homepage = meta_json['packages'][0]['homepage']
     rust_version = meta_json['packages'][0]['rust_version']
     publish_info = meta_json['packages'][0]['metadata']['info']['publish_info']
-    add_envs({
+    return {
         "APP_VERSION": app_version,
         "APP_NAME": app_name,
         "MAINTAINER": maintainer,
         "HOMEPAGE": homepage,
         "RUST_VERSION": rust_version,
         "PUBLISH_INFO": publish_info,
-    })
+    }
+
+
+def run(cfg: Dict[str, str]):
+    version = cfg['APP_VERSION']
+    print(f"version: {version}")
+    v_revision = next_revision_num(version)
+    new_version = f"{version}.{v_revision}"
+    new_tag = f"v{new_version}"
+    print(f"new_tag: {new_tag}")
+    cfg['NEW_VERSION'] = new_version
+    cfg['NEW_TAG'] = new_tag
+    add_envs(cfg)
 
 
 if __name__ == '__main__':
-    cargo_meta_handle()
-    run()
+    run(cargo_meta_handle())
