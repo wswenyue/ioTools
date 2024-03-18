@@ -37,6 +37,7 @@ else
   binary="./target/${MATRIX_TARGET}/release/${APP_NAME}"
   if [ -e "${binary}" ]
   then
+      mkdir -p ./brew/bin
       mv "${binary}" "./brew/bin/${APP_NAME}"
       cd ./brew || exit 1
       tar -czf "${asset_binary_name}.tar.gz"  "./bin/${APP_NAME}"
