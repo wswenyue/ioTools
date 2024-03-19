@@ -2,9 +2,9 @@ use std::ffi::OsStr;
 
 use clap::Parser;
 
-use cli::cli::{Cli, Commands, StashCommands};
+use cli::{Cli, Commands, StashCommands};
 
-mod cli;
+pub mod cli;
 
 /// A fictional versioning CLI
 /// colorful: <https://github.com/console-rs/indicatif/blob/main/examples/yarnish.rs>
