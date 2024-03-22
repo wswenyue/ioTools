@@ -3,9 +3,12 @@
 #Date & Time: 2024-03-15 19:55:32
 #Description: a bash script
 ls -alh ./
-echo "===================build begin================"
-cargo build --verbose --release --target "${MATRIX_TARGET}"
-echo "===================build end================"
+echo "=============io_tools======build begin================"
+cargo build --verbose --release -p io_tools --target "${MATRIX_TARGET}"
+echo "=============io_tools======build end================"
+echo "=============io_tools_desk.app======build begin================"
+cargo tauri build --verbose --target "${MATRIX_TARGET}"
+echo "=============io_tools_desk.app======build end================"
 ls -alh ./
 echo "=================pack target:${MATRIX_TARGET}======begin========="
 asset_target="target-${APP_VERSION}-${MATRIX_TARGET}.tar.gz"
