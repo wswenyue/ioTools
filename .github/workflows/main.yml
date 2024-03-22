@@ -97,6 +97,15 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: setup node
+        uses: actions/setup-node@master
+
+      - name: Install dep
+        shell: bash
+        run: |
+          npm install
+          cargo install tauri-cli
+
       - name: Build archive
         shell: bash
         run: |
