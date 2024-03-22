@@ -8,11 +8,3 @@ members = [
 default-members = [
     "rust-desk"
 ]
-
-
-# fix: mac v1.2.0 can not copy/paste
-# https://github.com/tauri-apps/tauri/issues/5669
-[profile.release]
-strip = true
-lto = true
-opt-level = "s"
