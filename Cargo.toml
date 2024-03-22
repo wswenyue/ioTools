@@ -1,34 +1,18 @@
-[package]
-name = "io_tools"
-version = "0.1.0"
-edition = "2021"
-authors = ["wswenyue <wswenyue@gmail.com>"]
-description = "The io_tools is a high-performance command line tool for processing files, text, network and other operations."
-categories = ["command-line-utilities"]
-homepage = "https://github.com/wswenyue/ioTools"
-repository = "https://github.com/wswenyue/ioTools"
-keywords = [
-    "search",
-    "text",
-    "network",
-    "filesystem",
-    "tool",
+[workspace]
+resolver = "2"
+members = [
+    "rust-cli",
+    "rust-desk"
 ]
-rust-version = "1.76.0"
-build = "build.rs"
 
-# 以下配置元数据可以在发布时使用
-[package.metadata.info]
-publish_info = """
-# :sunglasses: ioTools :sunglasses:
-:steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive:
-"""
+default-members = [
+    "rust-desk"
+]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-clap = { version = "4.5.3", features = ["derive"] }
-
-[build-dependencies]
-clap = { version = "4.5.3", features = ["derive"] }
-clap_mangen = "0.2.20"
+# fix: mac v1.2.0 can not copy/paste
+# https://github.com/tauri-apps/tauri/issues/5669
+[profile.release]
+strip = true
+lto = true
+opt-level = "s"
