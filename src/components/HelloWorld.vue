@@ -6,16 +6,16 @@ defineProps<{
   msg: string
 }>()
 
-let my_str = ref('init value')
+let my_str = ref<string>('init value')
 
 function updateRust() {
 
   console.log(invoke)
-  invoke("greet", {name: "kkkk"}).then(
-      (data) => {
+  invoke<string>("greet", {name: "kkkk"}).then(
+      (data: string) => {
         console.log(data)
         console.log("type=>" + typeof data)
-        my_str.value = data.toString()
+        my_str.value = data
       }
   )
 }
