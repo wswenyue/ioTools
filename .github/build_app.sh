@@ -28,7 +28,7 @@ if [ "${MATRIX_OS}" = "macos-latest" ]; then
 
   if [ -e "${app_path}" ]; then
     mv "${app_path}" "./${app_dmg}"
-    echo "ASSET_GUI=${app_dmg}=" >>$GITHUB_ENV
+    echo "ASSET_GUI=${app_dmg}" >>$GITHUB_ENV
   else
     echo "file no exists!!! app_dmg :${app_dmg}"
     exit 1
