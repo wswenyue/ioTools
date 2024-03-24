@@ -147,7 +147,7 @@ def run(cfg: Dict[str, str]):
     cfg['NEW_VERSION'] = new_version
     cfg['NEW_TAG'] = new_tag
     add_envs(cfg)
-    add_outputs(cfg)
+#     add_outputs(cfg)
 
 
 if __name__ == '__main__':

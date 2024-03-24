@@ -19,16 +19,21 @@ jobs:
       - name: build env
         shell: bash
         run: python3 .github/create_metadata.py setup
-  #
-  #    outputs:
-  #      name: ${{ env.APP_NAME }}
-  #      version: ${{ env.APP_VERSION }}
-  #      maintainer: ${{ env.MAINTAINER }}
-  #      homepage: ${{ env.HOMEPAGE }}
-  #      rust_version: ${{ env.RUST_VERSION }}
-  #      publish_info: ${{ env.PUBLISH_INFO }}
-  #      new_tag: ${{ env.NEW_TAG }}
-  #      new_version: ${{ env.NEW_VERSION }}
+    # echo "NEW_TAG=${{ needs.crate_metadata.outputs.NEW_TAG }}" >> $GITHUB_ENV
+    #          echo "NEW_VERSION=${{ needs.crate_metadata.outputs.NEW_VERSION }}" >> $GITHUB_ENV
+    #          echo "GUI_NAME=${{ needs.crate_metadata.outputs.GUI_NAME }}" >> $GITHUB_ENV
+    #          echo "CLI_NAME=${{ needs.crate_metadata.outputs.CLI_NAME }}" >> $GITHUB_ENV
+    #          echo "APP_VERSION=${{ needs.crate_metadata.outputs.APP_VERSION }}" >> $GITHUB_ENV
+    #          echo "RUST_VERSION=${{ needs.crate_metadata.outputs.RUST_VERSION }}" >> $GITHUB_ENV
+    #          echo "PUBLISH_INFO=${{ needs.crate_metadata.outputs.PUBLISH_INFO }}" >> $GITHUB_ENV
+    outputs:
+      NEW_TAG: ${{ env.NEW_TAG }}
+      NEW_VERSION: ${{ env.NEW_VERSION }}
+      GUI_NAME: ${{ env.GUI_NAME }}
+      CLI_NAME: ${{ env.CLI_NAME }}
+      APP_VERSION: ${{ env.APP_VERSION }}
+      RUST_VERSION: ${{ env.RUST_VERSION }}
+      PUBLISH_INFO: ${{ env.PUBLISH_INFO }}
 
   build:
     name: Build ${{ matrix.target }} (${{ matrix.os }})
