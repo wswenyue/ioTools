@@ -10,6 +10,7 @@ class Iotools < Formula
 
   def install
     bin.install "io_tools" => "iotools"
+    man1.install "io_tools.1" => "iotools.1"
   end
 
   test do

@@ -35,7 +35,8 @@ else
   cli_binary="./target/${MATRIX_TARGET}/release/${CLI_NAME}"
   if [ -e "${cli_binary}" ]; then
     mv "${cli_binary}" "./${CLI_NAME}"
-    tar -czf "${asset_cli_name}.tar.gz" "./${CLI_NAME}"
+    mv "./target/release/${CLI_NAME}.1" "./${CLI_NAME}.1"
+    tar -czf "${asset_cli_name}.tar.gz" "./${CLI_NAME}" "./${CLI_NAME}.1"
     echo "ASSET_CLI=${asset_cli_name}.tar.gz" >>$GITHUB_ENV
   else
     echo "file no exists!!! cli_binary :${cli_binary}"
