@@ -108,7 +108,10 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
-          sh .github/build_archive.sh
+          echo "##########build cli############"
+          sh .github/build_cli.sh
+          echo "##########build app############"
+          sh .github/build_app.sh
 
       # - name: Upload artifact
       #   uses: actions/upload-artifact@v4
