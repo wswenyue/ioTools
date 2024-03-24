@@ -41,7 +41,7 @@ if [ "${MATRIX_OS}" = "windows-latest" ]; then
         exit 1
   fi
 
-elif [ "${MATRIX_OS}" = "x86_64-apple-darwin" ]; then
+elif [ "${MATRIX_OS}" = "macos-latest" ]; then
     cli_binary="./target/${MATRIX_TARGET}/release/${CLI_NAME}"
       if [ -e "${cli_binary}" ]; then
           mv "${cli_binary}" "./${CLI_NAME}"
@@ -52,7 +52,12 @@ elif [ "${MATRIX_OS}" = "x86_64-apple-darwin" ]; then
           exit 1
       fi
       #./target/x86_64-apple-darwin/release/bundle/dmg/io_tools_desk_1.1.0_x64.dmg
-      app_dmg="./target/${MATRIX_TARGET}/release/bundle/dmg/${GUI_NAME}_${APP_VERSION}_x64.dmg"
+      if [ "${MATRIX_TARGET}" = "x86_64-apple-darwin" ]; then
+         app_dmg="./target/${MATRIX_TARGET}/release/bundle/dmg/${GUI_NAME}_${APP_VERSION}_x64.dmg"
+      else
+         app_dmg="./target/${MATRIX_TARGET}/release/bundle/dmg/${GUI_NAME}_${APP_VERSION}_x32.dmg"
+      fi
+
       if [ -e "${app_dmg}" ]; then
          echo "ASSET_GUI=${app_dmg}=" >> $GITHUB_ENV
       else
