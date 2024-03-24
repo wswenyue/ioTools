@@ -1,13 +1,15 @@
 [package]
 name = "io_tools_desk"
-version = "0.1.0"
-edition = "2021"
-authors = ["wswenyue <wswenyue@gmail.com>"]
-description = "The io_tools is a high-performance command line tool for processing files, text, network and other operations."
-homepage = "https://github.com/wswenyue/ioTools"
-repository = "https://github.com/wswenyue/ioTools"
+categories = ['gui']
 
-rust-version = "1.76.0"
+rust-version.workspace = true
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

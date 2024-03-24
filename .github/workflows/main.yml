@@ -16,28 +16,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: create_tag
+      - name: build env
         shell: bash
-        run: python3 .github/create_tag.py
-      - name: test env
-        shell: bash
-        run: |
-          echo "APP_NAME: ${APP_NAME}"
-          echo "APP_VERSION: ${{ env.APP_VERSION }}"
-          echo "NEW_VERSION: ${{ env.NEW_VERSION }}"
-          echo "MAINTAINER: ${MAINTAINER}"
-          echo "PUBLISH_INFO: ${PUBLISH_INFO}"
-          echo "RUST_VERSION: ${RUST_VERSION}"
-
-    outputs:
-      name: ${{ env.APP_NAME }}
-      version: ${{ env.APP_VERSION }}
-      maintainer: ${{ env.MAINTAINER }}
-      homepage: ${{ env.HOMEPAGE }}
-      rust_version: ${{ env.RUST_VERSION }}
-      publish_info: ${{ env.PUBLISH_INFO }}
-      new_tag: ${{ env.NEW_TAG }}
-      new_version: ${{ env.NEW_VERSION }}
+        run: python3 .github/create_metadata.py setup
+  #
+  #    outputs:
+  #      name: ${{ env.APP_NAME }}
+  #      version: ${{ env.APP_VERSION }}
+  #      maintainer: ${{ env.MAINTAINER }}
+  #      homepage: ${{ env.HOMEPAGE }}
+  #      rust_version: ${{ env.RUST_VERSION }}
+  #      publish_info: ${{ env.PUBLISH_INFO }}
+  #      new_tag: ${{ env.NEW_TAG }}
+  #      new_version: ${{ env.NEW_VERSION }}
 
   build:
     name: Build ${{ matrix.target }} (${{ matrix.os }})
@@ -67,24 +58,19 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: get env
+      - name: set env
         run: |
-          echo "new_tag: ${{ needs.crate_metadata.outputs.new_tag }}" >> $GITHUB_STEP_SUMMARY
-          echo "NEW_TAG=${{ needs.crate_metadata.outputs.new_tag }}" >> $GITHUB_ENV
-          echo "APP_NAME=${{ needs.crate_metadata.outputs.name }}" >> $GITHUB_ENV
-          echo "APP_VERSION=${{ needs.crate_metadata.outputs.version }}" >> $GITHUB_ENV
-          echo "NEW_VERSION=${{ needs.crate_metadata.outputs.new_version }}" >> $GITHUB_ENV
+          echo "NEW_TAG=${{ needs.crate_metadata.outputs.NEW_TAG }}" >> $GITHUB_ENV
+          echo "NEW_VERSION=${{ needs.crate_metadata.outputs.NEW_VERSION }}" >> $GITHUB_ENV
+          echo "GUI_NAME=${{ needs.crate_metadata.outputs.GUI_NAME }}" >> $GITHUB_ENV
+          echo "CLI_NAME=${{ needs.crate_metadata.outputs.CLI_NAME }}" >> $GITHUB_ENV
+          echo "APP_VERSION=${{ needs.crate_metadata.outputs.APP_VERSION }}" >> $GITHUB_ENV
+          echo "RUST_VERSION=${{ needs.crate_metadata.outputs.RUST_VERSION }}" >> $GITHUB_ENV
+          echo "PUBLISH_INFO=${{ needs.crate_metadata.outputs.PUBLISH_INFO }}" >> $GITHUB_ENV
+
           echo "MATRIX_TARGET=${{ matrix.target }}" >> $GITHUB_ENV
           echo "MATRIX_OS=${{ matrix.os }}" >> $GITHUB_ENV
 
-          echo "APP_NAME: ${{ needs.crate_metadata.outputs.name }}" >> $GITHUB_STEP_SUMMARY
-          echo "APP_VERSION: ${{ needs.crate_metadata.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "maintainer: ${{ needs.crate_metadata.outputs.maintainer }}" >> $GITHUB_STEP_SUMMARY
-          echo "homepage: ${{ needs.crate_metadata.outputs.homepage }}" >> $GITHUB_STEP_SUMMARY
-          echo "rust_version: ${{ needs.crate_metadata.outputs.rust_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "MATRIX_TARGET: ${{ matrix.target }}" >> $GITHUB_STEP_SUMMARY
-          echo "MATRIX_OS: ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
-          
           git_branch=$(git rev-parse --abbrev-ref HEAD)
           git_sha_short=$(git rev-parse --short HEAD)
           git_branch_sha="${git_branch}-${git_sha_short}"
@@ -92,7 +78,20 @@ jobs:
           echo "GIT_SHA_SHORT=${git_sha_short}" >> $GITHUB_ENV
           echo "GIT_BRANCH_SHA=${git_branch_sha}" >> $GITHUB_ENV
 
-      - name: Install Rust
+      - name: read env
+        run: |
+          echo "NEW_TAG: ${{ env.NEW_TAG }}" >> $GITHUB_STEP_SUMMARY
+          echo "NEW_VERSION: ${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "GUI_NAME: ${{ env.GUI_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "CLI_NAME: ${{ env.CLI_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "APP_VERSION: ${{ env.APP_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "RUST_VERSION: ${{ env.RUST_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "MATRIX_TARGET: ${{ env.MATRIX_TARGET }}" >> $GITHUB_STEP_SUMMARY
+          echo "GIT_BRANCH: ${{ env.GIT_BRANCH }}" >> $GITHUB_STEP_SUMMARY
+          echo "GIT_SHA_SHORT: ${{ env.GIT_SHA_SHORT }}" >> $GITHUB_STEP_SUMMARY
+          echo "GIT_BRANCH_SHA: ${{ env.GIT_BRANCH_SHA }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -111,21 +110,22 @@ jobs:
         run: |
           sh .github/build_archive.sh
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact
-          path: |
-            ${{ env.asset_target }}
-            ${{ env.asset_binary }}
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: my-artifact
+      #     path: |
+      #       ${{ env.asset_target }}
+      #       ${{ env.asset_binary }}
 
-      - name: Upload Release - Binary
+      - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.NEW_TAG }}
-          body: ${{ needs.crate_metadata.outputs.publish_info }}
+          body: ${{ env.PUBLISH_INFO }}
           files: |
-            ${{ env.asset_binary }}
+            ${{ env.ASSET_CLI }}
+            ${{ env.ASSET_GUI }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -133,7 +133,7 @@ jobs:
         id: update_formula
         run: |
           echo "- :white_check_mark: update formula config file" >> $GITHUB_STEP_SUMMARY
-          url="https://github.com/wswenyue/ioTools/releases/download/${NEW_TAG}/${asset_binary}"
+          url="https://github.com/wswenyue/ioTools/releases/download/${NEW_TAG}/${ASSET_CLI}"
           sha256=$(wget -O ioTools.tar.gz ${url} && shasum -a 256 ioTools.tar.gz | cut -d ' ' -f 1)
           echo "> version: ${NEW_VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "> new_tag: ${NEW_TAG}" >> $GITHUB_STEP_SUMMARY

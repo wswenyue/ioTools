@@ -1,8 +1,5 @@
 [package]
-name = "io_tools"
-categories = ["command-line-utilities"]
-build = "./build.rs"
-
+name = "io_tools_core"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -11,13 +8,8 @@ description.workspace = true
 homepage.workspace = true
 repository.workspace = true
 keywords.workspace = true
-
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.5.3", features = ["derive"] }
 
 [build-dependencies]
-clap = { version = "4.5.3", features = ["derive"] }
-clap_mangen = "0.2.20"

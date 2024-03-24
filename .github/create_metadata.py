@@ -5,6 +5,7 @@
 import json
 import os
 import subprocess
+import sys
 import uuid
 from typing import Dict, Any
 
@@ -20,9 +21,7 @@ def get_str(obj) -> str:
 
 
 def add_envs(envs: Dict[str, Any]):
-    env_file = os.getenv('GITHUB_ENV')
-    # write to the file
-    with open(env_file, "a") as env_file:
+    with open(os.getenv('GITHUB_ENV'), "a") as env_file:
         for key, value in envs.items():
             if '\n' in value or '\r' in value:
                 delimiter = uuid.uuid1()
@@ -34,17 +33,17 @@ def add_envs(envs: Dict[str, Any]):
             env_file.write("\n")
 
 
-def set_output(name, value):
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-        print(f'{name}={value}', file=fh)
-
-
-def set_multiline_output(name, value):
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-        delimiter = uuid.uuid1()
-        print(f'{name}<<{delimiter}', file=fh)
-        print(value, file=fh)
-        print(delimiter, file=fh)
+def add_outputs(envs: Dict[str, Any]):
+    with open(os.getenv('GITHUB_OUTPUT'), "a") as out_file:
+        for key, value in envs.items():
+            if '\n' in value or '\r' in value:
+                delimiter = uuid.uuid1()
+                print(f'{key}<<{delimiter}', file=out_file)
+                print(value, file=out_file)
+                print(delimiter, file=out_file)
+            else:
+                out_file.write(f"{key}={value}")
+            out_file.write("\n")
 
 
 def cmd_run_shell(cmd: str) -> str:
@@ -114,21 +113,28 @@ def next_revision_num(version_pre: str) -> int:
 def cargo_meta_handle() -> Dict:
     meta: str = cmd_run("cargo metadata --no-deps --format-version 1")
     meta_json = json.loads(meta)
-    app_version = meta_json['packages'][0]['version']
-    print(f"app_version:{app_version}")
-    app_name = meta_json['packages'][0]['name']
-    maintainer = meta_json['packages'][0]['authors'][0]
-    homepage = meta_json['packages'][0]['homepage']
-    rust_version = meta_json['packages'][0]['rust_version']
-    publish_info = meta_json['packages'][0]['metadata']['info']['publish_info']
-    return {
-        "APP_VERSION": app_version,
-        "APP_NAME": app_name,
-        "MAINTAINER": maintainer,
-        "HOMEPAGE": homepage,
-        "RUST_VERSION": rust_version,
-        "PUBLISH_INFO": publish_info,
-    }
+    packages = meta_json['packages']
+    meta_map: Dict[str, str] = {}
+    for pack in packages:
+        categories = pack['categories']
+
+        if "gui" in categories:
+            meta_map['GUI_NAME'] = pack['name']
+            meta_map['APP_VERSION'] = pack['version']
+            meta_map['RUST_VERSION'] = pack['rust_version']
+        elif "command-line-utilities" in categories:
+            meta_map['CLI_NAME'] = pack['name']
+    meta_map['PUBLISH_INFO'] = meta_json['metadata']['info']['publish_info']
+    print(meta_map)
+    return meta_map
+    # return {
+    #     "APP_VERSION": app_version,
+    #     "APP_NAME": app_name,
+    #     "MAINTAINER": maintainer,
+    #     "HOMEPAGE": homepage,
+    #     "RUST_VERSION": rust_version,
+    #     "PUBLISH_INFO": publish_info,
+    # }
 
 
 def run(cfg: Dict[str, str]):
@@ -141,7 +147,14 @@ def run(cfg: Dict[str, str]):
     cfg['NEW_VERSION'] = new_version
     cfg['NEW_TAG'] = new_tag
     add_envs(cfg)
+    add_outputs(cfg)
 
 
 if __name__ == '__main__':
-    run(cargo_meta_handle())
+    args = sys.argv[1:]
+    if len(args) == 1 and args[0] == 'setup':
+        run(cargo_meta_handle())
+    elif len(args) == 2 and args[0] == 'read':
+        exit(1)
+    else:
+        exit(1)

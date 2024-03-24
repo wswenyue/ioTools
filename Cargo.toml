@@ -2,9 +2,34 @@
 resolver = "2"
 members = [
     "rust-cli",
-    "rust-desk"
+    "rust-desk",
+    "rust-core"
+]
+default-members = [
+    "rust-cli"
 ]
 
-default-members = [
-    "rust-desk"
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["wswenyue <wswenyue@gmail.com>"]
+description = "The io_tools is a high-performance command line tool for processing files, text, network and other operations."
+homepage = "https://github.com/wswenyue/ioTools"
+repository = "https://github.com/wswenyue/ioTools"
+keywords = [
+    "search",
+    "text",
+    "network",
+    "filesystem",
+    "tool",
 ]
+
+rust-version = "1.76.0"
+
+[workspace.metadata.info]
+## 以下配置元数据可以在发布时使用
+publish_info = """
+# :sunglasses: ioTools :sunglasses:
+:steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive: :steam_locomotive:
+"""
+
