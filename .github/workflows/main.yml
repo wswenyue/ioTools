@@ -19,13 +19,7 @@ jobs:
       - name: build env
         shell: bash
         run: python3 .github/create_metadata.py setup
-    # echo "NEW_TAG=${{ needs.crate_metadata.outputs.NEW_TAG }}" >> $GITHUB_ENV
-    #          echo "NEW_VERSION=${{ needs.crate_metadata.outputs.NEW_VERSION }}" >> $GITHUB_ENV
-    #          echo "GUI_NAME=${{ needs.crate_metadata.outputs.GUI_NAME }}" >> $GITHUB_ENV
-    #          echo "CLI_NAME=${{ needs.crate_metadata.outputs.CLI_NAME }}" >> $GITHUB_ENV
-    #          echo "APP_VERSION=${{ needs.crate_metadata.outputs.APP_VERSION }}" >> $GITHUB_ENV
-    #          echo "RUST_VERSION=${{ needs.crate_metadata.outputs.RUST_VERSION }}" >> $GITHUB_ENV
-    #          echo "PUBLISH_INFO=${{ needs.crate_metadata.outputs.PUBLISH_INFO }}" >> $GITHUB_ENV
+
     outputs:
       NEW_TAG: ${{ env.NEW_TAG }}
       NEW_VERSION: ${{ env.NEW_VERSION }}
@@ -64,6 +58,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: set env
+        shell: bash
         run: |
           echo "NEW_TAG=${{ needs.crate_metadata.outputs.NEW_TAG }}" >> $GITHUB_ENV
           echo "NEW_VERSION=${{ needs.crate_metadata.outputs.NEW_VERSION }}" >> $GITHUB_ENV
@@ -71,7 +66,6 @@ jobs:
           echo "CLI_NAME=${{ needs.crate_metadata.outputs.CLI_NAME }}" >> $GITHUB_ENV
           echo "APP_VERSION=${{ needs.crate_metadata.outputs.APP_VERSION }}" >> $GITHUB_ENV
           echo "RUST_VERSION=${{ needs.crate_metadata.outputs.RUST_VERSION }}" >> $GITHUB_ENV
-          echo "PUBLISH_INFO=${{ needs.crate_metadata.outputs.PUBLISH_INFO }}" >> $GITHUB_ENV
 
           echo "MATRIX_TARGET=${{ matrix.target }}" >> $GITHUB_ENV
           echo "MATRIX_OS=${{ matrix.os }}" >> $GITHUB_ENV
@@ -84,6 +78,7 @@ jobs:
           echo "GIT_BRANCH_SHA=${git_branch_sha}" >> $GITHUB_ENV
 
       - name: read env
+        shell: bash
         run: |
           echo "NEW_TAG: ${{ env.NEW_TAG }}" >> $GITHUB_STEP_SUMMARY
           echo "NEW_VERSION: ${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
@@ -127,7 +122,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.NEW_TAG }}
-          body: ${{ env.PUBLISH_INFO }}
+          body: ${{ needs.crate_metadata.outputs.PUBLISH_INFO }}
           files: |
             ${{ env.ASSET_CLI }}
             ${{ env.ASSET_GUI }}
