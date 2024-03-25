@@ -4,8 +4,8 @@ use std::path::PathBuf;
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
 #[derive(Debug, Parser)] // requires `derive` feature
-#[command(name = "git")]
-#[command(about = "A fictional versioning CLI", long_about = None)]
+#[command(name = "iotools")]
+#[command(about = "iotools CLI", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
