@@ -1,5 +1,5 @@
 [package]
-name = "io_tools_core"
+name = "io_tools_ffmpeg"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -11,5 +11,7 @@ keywords.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+home = "0.5.9"
+ffmpeg-next = "6.1.1"
 
 [build-dependencies]

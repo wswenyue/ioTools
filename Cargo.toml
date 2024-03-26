@@ -1,12 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-    "rust-cli",
-    "rust-desk",
-    "rust-core"
+    "rust/*",
 ]
 default-members = [
-    "rust-cli"
+    "rust/cli"
 ]
 
 [workspace.package]
