@@ -25,6 +25,7 @@
     "@vue/tsconfig": "^0.5.1",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
+    "naive-ui": "^2.38.1",
     "npm-run-all2": "^6.1.2",
     "typescript": "~5.4.0",
     "vite": "^5.1.6",

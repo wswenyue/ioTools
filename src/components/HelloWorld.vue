@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {invoke} from "@tauri-apps/api";
 import {ref} from "vue";
+import {ask} from "@tauri-apps/api/dialog";
 
 defineProps<{
   msg: string
@@ -20,9 +21,19 @@ function updateRust() {
   )
 }
 
+async function dialogAsk() {
+  const answer = await ask('This action cannot be reverted. Are you sure?', {
+    title: 'Tauri',
+    type: 'warning',
+  });
+
+  console.log(answer);
+}
+
 defineExpose({
   my_str,
-  updateRust
+  updateRust,
+  dialogAsk
 })
 </script>
 
@@ -32,11 +43,7 @@ defineExpose({
     <button @click="updateRust">
       the Btn: {{ my_str }}
     </button>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>. What's next?
-    </h3>
+
   </div>
 </template>
 
